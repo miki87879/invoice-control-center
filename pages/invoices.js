@@ -127,7 +127,6 @@ export default function InvoicesPage() {
                   <th style={th}>חברה</th>
                   <th style={th}>חשבונית</th>
                   <th style={th}>סטטוס</th>
-                  <th style={th}>זמן עיבוד</th>
                   <th style={th}>תאריך</th>
                 </tr>
               </thead>
@@ -161,7 +160,6 @@ export default function InvoicesPage() {
                         {log.status || "Uploaded"}
                       </span>
                     </td>
-                    <td style={td}>{log.processingTime || 0} שניות</td>
                     <td style={td}>{log.date || "-"}</td>
                   </tr>
                 ))}
