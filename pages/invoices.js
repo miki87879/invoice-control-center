@@ -5,11 +5,10 @@ function buildDownloadLink(fileLink) {
   if (!fileLink) return "";
 
   try {
-    const url = new URL(fileLink);
-    const decodedPath = decodeURIComponent(url.pathname);
+    const cleanUrl = decodeURI(fileLink);
 
-    return `https://michael7878.sharepoint.com/_layouts/15/download.aspx?SourceUrl=${encodeURIComponent(
-      decodedPath
+    return `https://michael7878.sharepoint.com/sites/InvoiceAutomationTest/_layouts/15/download.aspx?SourceUrl=${encodeURIComponent(
+      cleanUrl
     )}`;
   } catch (error) {
     console.error("Invalid file link:", fileLink);
