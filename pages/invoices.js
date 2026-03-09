@@ -43,53 +43,30 @@ export default function InvoicesPage() {
 
   if (loading) {
     return (
-      <div
-        dir="rtl"
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "Arial",
-          background: "#f4f6fb",
-          color: "#0f172a",
-          fontSize: "18px"
-        }}
-      >
+      <div style={loadingPageStyle}>
         טוען חשבוניות...
       </div>
     );
   }
 
   return (
-    <div
-      dir="rtl"
-      style={{
-        background: "#f4f6fb",
-        minHeight: "100vh",
-        fontFamily: "Arial",
-        color: "#0f172a"
-      }}
-    >
+    <div dir="rtl" style={pageStyle}>
       <TopNav />
 
-      <div style={pageWrapperStyle}>
-        <div style={headerCardStyle}>
-          <h1 style={pageTitleStyle}>כל החשבוניות</h1>
-
-          <p style={pageSubtitleStyle}>
-            רשימה מלאה של הלוגים ממערכת האוטומציה
-          </p>
+      <div style={wrapperStyle}>
+        <div style={heroCardStyle}>
+          <h1 style={titleStyle}>כל החשבוניות</h1>
+          <p style={subtitleStyle}>רשימה מלאה של הלוגים ממערכת האוטומציה</p>
         </div>
 
         <div style={tableCardStyle}>
           {logs.length === 0 ? (
             <div style={emptyStateStyle}>לא נמצאו חשבוניות להצגה</div>
           ) : (
-            <div style={tableScrollStyle}>
+            <div style={tableWrapperStyle}>
               <table style={tableStyle}>
                 <thead>
-                  <tr style={tableHeaderRowStyle}>
+                  <tr>
                     <th style={thStyle}>חברה</th>
                     <th style={thStyle}>חשבונית</th>
                     <th style={thStyle}>סטטוס</th>
@@ -101,7 +78,7 @@ export default function InvoicesPage() {
 
                 <tbody>
                   {logs.map((log, index) => (
-                    <tr key={index} style={tableRowStyle}>
+                    <tr key={index} style={rowStyle}>
                       <td style={tdStyle}>{log.company || "לא ידוע"}</td>
 
                       <td style={tdStyle}>{log.invoiceNumber || "-"}</td>
@@ -135,7 +112,7 @@ export default function InvoicesPage() {
 
                       <td style={tdStyle}>
                         {log.fileLink ? (
-                          <div style={actionsCellStyle}>
+                          <div style={actionsStyle}>
                             <a
                               href={log.fileLink}
                               target="_blank"
@@ -155,7 +132,7 @@ export default function InvoicesPage() {
                             </a>
                           </div>
                         ) : (
-                          <span style={noFileStyle}>-</span>
+                          <span style={dashStyle}>-</span>
                         )}
                       </td>
                     </tr>
@@ -170,41 +147,60 @@ export default function InvoicesPage() {
   );
 }
 
-const pageWrapperStyle = {
+const pageStyle = {
+  background: "#f4f6fb",
+  minHeight: "100vh",
+  fontFamily: "Arial, sans-serif",
+  color: "#0f172a"
+};
+
+const loadingPageStyle = {
+  minHeight: "100vh",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "#f4f6fb",
+  fontFamily: "Arial, sans-serif",
+  color: "#0f172a",
+  fontSize: "18px"
+};
+
+const wrapperStyle = {
   maxWidth: "1450px",
   margin: "0 auto",
   padding: "30px 20px"
 };
 
-const headerCardStyle = {
-  background: "white",
-  padding: "28px 32px",
+const heroCardStyle = {
+  background: "#ffffff",
   borderRadius: "16px",
+  padding: "28px 32px",
   boxShadow: "0 10px 40px rgba(0,0,0,0.06)",
   marginBottom: "24px"
 };
 
-const pageTitleStyle = {
+const titleStyle = {
   margin: 0,
   fontSize: "38px",
+  fontWeight: "700",
   color: "#0f172a"
 };
 
-const pageSubtitleStyle = {
-  color: "#64748b",
-  fontSize: "16px",
+const subtitleStyle = {
   marginTop: "10px",
-  marginBottom: 0
+  marginBottom: 0,
+  color: "#64748b",
+  fontSize: "16px"
 };
 
 const tableCardStyle = {
-  background: "white",
+  background: "#ffffff",
   borderRadius: "16px",
   padding: "20px",
   boxShadow: "0 10px 30px rgba(0,0,0,0.05)"
 };
 
-const tableScrollStyle = {
+const tableWrapperStyle = {
   width: "100%",
   overflowX: "auto"
 };
@@ -213,31 +209,30 @@ const tableStyle = {
   width: "100%",
   minWidth: "1150px",
   borderCollapse: "collapse",
-  tableLayout: "fixed"
-};
-
-const tableHeaderRowStyle = {
-  borderBottom: "2px solid #e5e7eb"
-};
-
-const tableRowStyle = {
-  borderBottom: "1px solid #f1f5f9"
+  tableLayout: "auto"
 };
 
 const thStyle = {
   textAlign: "right",
   padding: "16px 12px",
-  fontWeight: "bold",
   fontSize: "15px",
+  fontWeight: "700",
   color: "#475569",
+  borderBottom: "2px solid #e5e7eb",
   whiteSpace: "nowrap"
 };
 
 const tdStyle = {
+  textAlign: "right",
   padding: "18px 12px",
   fontSize: "15px",
   color: "#0f172a",
+  borderBottom: "1px solid #f1f5f9",
   verticalAlign: "middle"
+};
+
+const rowStyle = {
+  background: "#ffffff"
 };
 
 const dateTextStyle = {
@@ -252,7 +247,7 @@ const statusBadgeStyle = {
   padding: "7px 12px",
   borderRadius: "10px",
   fontSize: "13px",
-  fontWeight: "bold",
+  fontWeight: "700",
   whiteSpace: "nowrap"
 };
 
@@ -271,11 +266,11 @@ const errorBadgeStyle = {
   color: "#991b1b"
 };
 
-const actionsCellStyle = {
+const actionsStyle = {
   display: "flex",
-  alignItems: "center",
+  flexWrap: "wrap",
   gap: "8px",
-  flexWrap: "wrap"
+  alignItems: "center"
 };
 
 const openButtonStyle = {
@@ -287,7 +282,7 @@ const openButtonStyle = {
   padding: "8px 12px",
   borderRadius: "10px",
   fontSize: "13px",
-  fontWeight: "bold",
+  fontWeight: "700",
   whiteSpace: "nowrap"
 };
 
@@ -300,12 +295,13 @@ const downloadButtonStyle = {
   padding: "8px 12px",
   borderRadius: "10px",
   fontSize: "13px",
-  fontWeight: "bold",
+  fontWeight: "700",
   whiteSpace: "nowrap"
 };
 
-const noFileStyle = {
-  color: "#94a3b8"
+const dashStyle = {
+  color: "#94a3b8",
+  fontWeight: "600"
 };
 
 const emptyStateStyle = {
