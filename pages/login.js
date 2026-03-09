@@ -6,11 +6,12 @@ export default function LoginPage() {
 
   function handleLogin(e) {
     e.preventDefault();
-    alert("בשלב הבא נחבר את זה להתחברות אמיתית");
+    alert("בשלב הבא נחבר התחברות אמיתית");
   }
 
   return (
     <div
+      dir="rtl"
       style={{
         minHeight: "100vh",
         background: "#f5f7fb",
@@ -18,7 +19,7 @@ export default function LoginPage() {
         alignItems: "center",
         justifyContent: "center",
         fontFamily: "Arial, sans-serif",
-        padding: "20px",
+        padding: "20px"
       }}
     >
       <div
@@ -28,7 +29,7 @@ export default function LoginPage() {
           background: "#ffffff",
           borderRadius: "18px",
           boxShadow: "0 12px 40px rgba(15, 23, 42, 0.10)",
-          padding: "40px 32px",
+          padding: "40px 32px"
         }}
       >
         <div style={{ textAlign: "center", marginBottom: "28px" }}>
@@ -36,7 +37,7 @@ export default function LoginPage() {
             style={{
               margin: 0,
               fontSize: "32px",
-              color: "#1e293b",
+              color: "#1e293b"
             }}
           >
             התחברות למערכת
@@ -47,7 +48,7 @@ export default function LoginPage() {
               marginTop: "12px",
               color: "#64748b",
               fontSize: "15px",
-              lineHeight: "1.6",
+              lineHeight: "1.6"
             }}
           >
             Invoice Control Center
@@ -57,14 +58,14 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: "18px" }}>
+          <div style={{ marginBottom: "18px", textAlign: "right" }}>
             <label
               style={{
                 display: "block",
                 marginBottom: "8px",
                 color: "#334155",
                 fontWeight: "bold",
-                fontSize: "14px",
+                fontSize: "14px"
               }}
             >
               שם משתמש
@@ -82,19 +83,19 @@ export default function LoginPage() {
                 border: "1px solid #cbd5e1",
                 fontSize: "15px",
                 outline: "none",
-                background: "#ffffff",
+                textAlign: "right"
               }}
             />
           </div>
 
-          <div style={{ marginBottom: "22px" }}>
+          <div style={{ marginBottom: "22px", textAlign: "right" }}>
             <label
               style={{
                 display: "block",
                 marginBottom: "8px",
                 color: "#334155",
                 fontWeight: "bold",
-                fontSize: "14px",
+                fontSize: "14px"
               }}
             >
               סיסמה
@@ -112,7 +113,7 @@ export default function LoginPage() {
                 border: "1px solid #cbd5e1",
                 fontSize: "15px",
                 outline: "none",
-                background: "#ffffff",
+                textAlign: "right"
               }}
             />
           </div>
@@ -128,7 +129,7 @@ export default function LoginPage() {
               color: "#ffffff",
               fontSize: "16px",
               fontWeight: "bold",
-              cursor: "pointer",
+              cursor: "pointer"
             }}
           >
             התחבר
@@ -140,7 +141,7 @@ export default function LoginPage() {
             marginTop: "18px",
             textAlign: "center",
             color: "#94a3b8",
-            fontSize: "13px",
+            fontSize: "13px"
           }}
         >
           גישה מורשית בלבד
