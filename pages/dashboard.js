@@ -25,17 +25,26 @@ export default function DashboardPage() {
         "https://michael78.app.n8n.cloud/webhook/invoice-logs"
       );
 
+      if (!response.ok) {
+        throw new Error("Failed loading logs");
+      }
+
       const data = await response.json();
 
-      if (data.logs) {
+      if (data.logs && Array.isArray(data.logs)) {
         setLogs(data.logs);
         setTotalInvoices(data.totalInvoices || data.logs.length);
+      } else {
+        setLogs([]);
+        setTotalInvoices(0);
       }
     } catch (error) {
       console.error("Failed loading logs", error);
+      setLogs([]);
+      setTotalInvoices(0);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   function handleLogout() {
@@ -48,6 +57,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div
+        dir="rtl"
         style={{
           minHeight: "100vh",
           display: "flex",
@@ -179,33 +189,68 @@ export default function DashboardPage() {
         >
           <h2 style={{ marginTop: 0, color: "#0f172a" }}>פעילות אחרונה</h2>
 
-          {logs.map((log, index) => (
+          {logs.length === 0 ? (
             <div
-              key={index}
               style={{
-                borderBottom: "1px solid #e5e7eb",
-                padding: "16px 0"
+                textAlign: "center",
+                color: "#64748b",
+                padding: "20px 0"
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "18px", color: "#111827" }}>
-                {log.company || "לא ידוע"}
-              </div>
-
-              <div style={{ color: "#475569", marginTop: "6px" }}>
-                חשבונית: {log.invoiceNumber || "-"}
-              </div>
-
-              <div style={{ color: "#64748b", marginTop: "4px" }}>
-                זמן עיבוד: {log.processingTime} שניות
-              </div>
-
-              <div style={{ color: "#64748b", marginTop: "4px" }}>
-                תאריך: {log.date}
-              </div>
+              אין לוגים להצגה
             </div>
-          ))}
+          ) : (
+            logs.map((log, index) => (
+              <div
+                key={index}
+                style={{
+                  borderBottom: "1px solid #e5e7eb",
+                  padding: "16px 0"
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "22px",
+                    color: "#111827",
+                    marginBottom: "10px"
+                  }}
+                >
+                  {log.company || "לא ידוע"}
+                </div>
+
+                <div style={{ color: "#475569", marginTop: "6px", fontSize: "16px" }}>
+                  חשבונית: {log.invoiceNumber || "-"}
+                </div>
+
+                <div style={{ color: "#475569", marginTop: "6px", fontSize: "16px" }}>
+                  סטטוס: {log.status || "Uploaded"}
+                </div>
+
+                <div style={{ color: "#475569", marginTop: "6px", fontSize: "16px" }}>
+                  תאריך חשבונית:{" "}
+                  <span style={dateTextStyle}>
+                    {log.invoiceDate || "-"}
+                  </span>
+                </div>
+
+                <div style={{ color: "#475569", marginTop: "6px", fontSize: "16px" }}>
+                  תאריך העלאה למערכת:{" "}
+                  <span style={dateTextStyle}>
+                    {log.uploadDate || "-"}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+const dateTextStyle = {
+  direction: "ltr",
+  unicodeBidi: "isolate",
+  display: "inline-block"
+};
