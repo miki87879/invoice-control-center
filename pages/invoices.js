@@ -70,7 +70,7 @@ export default function InvoicesPage() {
     >
       <TopNav />
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "30px 20px" }}>
+      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "30px 20px" }}>
         <div
           style={{
             background: "white",
@@ -127,7 +127,8 @@ export default function InvoicesPage() {
                   <th style={th}>חברה</th>
                   <th style={th}>חשבונית</th>
                   <th style={th}>סטטוס</th>
-                  <th style={th}>תאריך</th>
+                  <th style={th}>תאריך חשבונית</th>
+                  <th style={th}>תאריך העלאה למערכת</th>
                 </tr>
               </thead>
 
@@ -135,7 +136,9 @@ export default function InvoicesPage() {
                 {logs.map((log, i) => (
                   <tr key={i} style={{ borderBottom: "1px solid #f1f5f9" }}>
                     <td style={td}>{log.company || "לא ידוע"}</td>
+
                     <td style={td}>{log.invoiceNumber || "-"}</td>
+
                     <td style={td}>
                       <span
                         style={{
@@ -160,7 +163,10 @@ export default function InvoicesPage() {
                         {log.status || "Uploaded"}
                       </span>
                     </td>
-                    <td style={td}>{log.date || "-"}</td>
+
+                    <td style={td}>{log.invoiceDate || "-"}</td>
+
+                    <td style={td}>{log.uploadDate || "-"}</td>
                   </tr>
                 ))}
               </tbody>
