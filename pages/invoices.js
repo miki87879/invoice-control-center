@@ -22,163 +22,64 @@ export default function InvoicesPage() {
         "https://michael78.app.n8n.cloud/webhook/invoice-logs"
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch invoices");
-      }
-
       const data = await response.json();
 
-      if (data.logs && Array.isArray(data.logs)) {
+      if (data.logs) {
         setLogs(data.logs);
-      } else {
-        setLogs([]);
       }
+
+      setLoading(false);
     } catch (error) {
-      console.error("Error loading invoices", error);
-      setLogs([]);
-    } finally {
+      console.error(error);
       setLoading(false);
     }
   }
 
   if (loading) {
-    return (
-      <div
-        dir="rtl"
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "Arial",
-          background: "#f4f6fb"
-        }}
-      >
-        טוען חשבוניות...
-      </div>
-    );
+    return <div style={{ padding: 40 }}>טוען נתונים...</div>;
   }
 
   return (
-    <div
-      dir="rtl"
-      style={{
-        background: "#f4f6fb",
-        minHeight: "100vh",
-        fontFamily: "Arial"
-      }}
-    >
+    <div dir="rtl">
       <TopNav />
 
-      <div style={{ maxWidth: "1450px", margin: "0 auto", padding: "30px 20px" }}>
-        <div
-          style={{
-            background: "white",
-            padding: "28px 32px",
-            borderRadius: "16px",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.06)",
-            marginBottom: "24px"
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "38px",
-              color: "#0f172a"
-            }}
-          >
-            כל החשבוניות
-          </h1>
+      <div style={containerStyle}>
+        <h1 style={titleStyle}>כל החשבוניות</h1>
+        <p style={subtitleStyle}>
+          רשימה מלאה של הלוגים ממערכת האוטומציה
+        </p>
 
-          <p
-            style={{
-              color: "#64748b",
-              fontSize: "16px",
-              marginTop: "10px"
-            }}
-          >
-            רשימה מלאה של הלוגים ממערכת האוטומציה
-          </p>
-        </div>
+        <div style={tableContainer}>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th>חברה</th>
+                <th>חשבונית</th>
+                <th>סטטוס</th>
+                <th>תאריך חשבונית</th>
+                <th>תאריך העלאה למערכת</th>
+                <th>מסמך</th>
+              </tr>
+            </thead>
 
-        <div
-          style={{
-            background: "white",
-            borderRadius: "16px",
-            padding: "20px",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.05)"
-          }}
-        >
-          {logs.length === 0 ? (
-            <div
-              style={{
-                padding: "30px",
-                textAlign: "center",
-                color: "#64748b",
-                fontSize: "16px"
-              }}
-            >
-              לא נמצאו חשבוניות להצגה
-            </div>
-          ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ borderBottom: "2px solid #e5e7eb" }}>
-                  <th style={th}>חברה</th>
-                  <th style={th}>חשבונית</th>
-                  <th style={th}>סטטוס</th>
-                  <th style={th}>תאריך חשבונית</th>
-                  <th style={th}>תאריך העלאה למערכת</th>
-                  <th style={th}>מסמך</th>
-                </tr>
-              </thead>
+            <tbody>
+              {logs.map((log, index) => (
+                <tr key={index}>
+                  <td>{log.company}</td>
 
-              <tbody>
-                {logs.map((log, i) => (
-                  <tr key={i} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                    <td style={td}>{log.company || "לא ידוע"}</td>
+                  <td>{log.invoiceNumber}</td>
 
-                    <td style={td}>{log.invoiceNumber || "-"}</td>
+                  <td>
+                    <span style={statusStyle}>{log.status}</span>
+                  </td>
 
-                    <td style={td}>
-                      <span
-                        style={{
-                          background:
-                            log.status === "Error"
-                              ? "#fee2e2"
-                              : log.status === "Skipped"
-                              ? "#fef3c7"
-                              : "#dcfce7",
-                          color:
-                            log.status === "Error"
-                              ? "#991b1b"
-                              : log.status === "Skipped"
-                              ? "#92400e"
-                              : "#166534",
-                          padding: "6px 10px",
-                          borderRadius: "8px",
-                          fontSize: "12px",
-                          fontWeight: "bold"
-                        }}
-                      >
-                        {log.status || "Uploaded"}
-                      </span>
-                    </td>
+                  <td>{log.invoiceDate || "-"}</td>
 
-                    <td style={td}>
-                      <span style={dateTextStyle}>
-                        {log.invoiceDate || "-"}
-                      </span>
-                    </td>
+                  <td>{log.uploadDate}</td>
 
-                    <td style={td}>
-                      <span style={dateTextStyle}>
-                        {log.uploadDate || "-"}
-                      </span>
-                    </td>
-
-                    <td style={td}>
-                      {log.fileLink ? (
+                  <td>
+                    {log.fileLink ? (
+                      <div style={{ display: "flex", gap: "8px" }}>
                         <a
                           href={log.fileLink}
                           target="_blank"
@@ -187,39 +88,65 @@ export default function InvoicesPage() {
                         >
                           🧾 פתח חשבונית
                         </a>
-                      ) : (
-                        <span style={{ color: "#94a3b8" }}>-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+
+                        <a
+                          href={`${log.fileLink}?download=1`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={downloadButtonStyle}
+                        >
+                          ⬇ הורד
+                        </a>
+                      </div>
+                    ) : (
+                      <span style={{ color: "#94a3b8" }}>-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   );
 }
 
-const th = {
-  textAlign: "right",
-  padding: "12px",
-  fontWeight: "bold",
-  fontSize: "14px",
-  color: "#475569"
+const containerStyle = {
+  maxWidth: "1200px",
+  margin: "0 auto",
+  padding: "40px 20px"
 };
 
-const td = {
-  padding: "12px",
-  fontSize: "14px",
-  color: "#0f172a"
+const titleStyle = {
+  fontSize: "32px",
+  marginBottom: "10px"
 };
 
-const dateTextStyle = {
-  direction: "ltr",
-  unicodeBidi: "isolate",
-  display: "inline-block"
+const subtitleStyle = {
+  color: "#64748b",
+  marginBottom: "30px"
+};
+
+const tableContainer = {
+  background: "white",
+  borderRadius: "16px",
+  overflow: "hidden",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.05)"
+};
+
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse"
+};
+
+const statusStyle = {
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "6px 12px",
+  borderRadius: "10px",
+  fontSize: "13px",
+  fontWeight: "bold"
 };
 
 const invoiceButtonStyle = {
@@ -228,6 +155,18 @@ const invoiceButtonStyle = {
   background: "#eff6ff",
   color: "#1d4ed8",
   border: "1px solid #bfdbfe",
+  padding: "8px 12px",
+  borderRadius: "10px",
+  fontSize: "13px",
+  fontWeight: "bold"
+};
+
+const downloadButtonStyle = {
+  display: "inline-block",
+  textDecoration: "none",
+  background: "#ecfdf5",
+  color: "#166534",
+  border: "1px solid #bbf7d0",
   padding: "8px 12px",
   borderRadius: "10px",
   fontSize: "13px",
