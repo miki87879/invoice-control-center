@@ -3,10 +3,40 @@ import { useState } from "react";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
-    alert("בשלב הבא נחבר התחברות אמיתית");
+    setErrorMessage("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        localStorage.setItem("invoice_auth", "true");
+        window.location.href = "/dashboard";
+        return;
+      }
+
+      setErrorMessage("שם משתמש או סיסמה שגויים");
+    } catch (error) {
+      setErrorMessage("אירעה שגיאה בהתחברות");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -118,8 +148,26 @@ export default function LoginPage() {
             />
           </div>
 
+          {errorMessage ? (
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "12px 14px",
+                borderRadius: "10px",
+                background: "#fef2f2",
+                color: "#b91c1c",
+                border: "1px solid #fecaca",
+                fontSize: "14px",
+                textAlign: "center"
+              }}
+            >
+              {errorMessage}
+            </div>
+          ) : null}
+
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: "100%",
               padding: "14px 18px",
@@ -129,10 +177,11 @@ export default function LoginPage() {
               color: "#ffffff",
               fontSize: "16px",
               fontWeight: "bold",
-              cursor: "pointer"
+              cursor: "pointer",
+              opacity: loading ? 0.7 : 1
             }}
           >
-            התחבר
+            {loading ? "מתחבר..." : "התחבר"}
           </button>
         </form>
 
