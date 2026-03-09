@@ -164,9 +164,17 @@ export default function InvoicesPage() {
                       </span>
                     </td>
 
-                    <td style={td}>{log.invoiceDate || "-"}</td>
+                    <td style={td}>
+                      <span style={dateTextStyle}>
+                        {log.invoiceDate || "-"}
+                      </span>
+                    </td>
 
-                    <td style={td}>{log.uploadDate || "-"}</td>
+                    <td style={td}>
+                      <span style={dateTextStyle}>
+                        {log.uploadDate || "-"}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -190,4 +198,10 @@ const td = {
   padding: "12px",
   fontSize: "14px",
   color: "#0f172a"
+};
+
+const dateTextStyle = {
+  direction: "ltr",
+  unicodeBidi: "isolate",
+  display: "inline-block"
 };
