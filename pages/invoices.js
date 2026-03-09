@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import TopNav from "../components/TopNav";
 
+function buildDownloadLink(fileLink) {
+  if (!fileLink) return "";
+
+  return `https://michael7878.sharepoint.com/sites/InvoiceAutomationTest/_layouts/download.aspx?SourceUrl=${encodeURIComponent(
+    fileLink
+  )}`;
+}
+
 export default function InvoicesPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,29 +30,23 @@ export default function InvoicesPage() {
         "https://michael78.app.n8n.cloud/webhook/invoice-logs"
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch invoices");
-      }
-
       const data = await response.json();
 
-      if (data.logs && Array.isArray(data.logs)) {
+      if (data.logs) {
         setLogs(data.logs);
-      } else {
-        setLogs([]);
       }
+
+      setLoading(false);
     } catch (error) {
-      console.error("Error loading invoices", error);
-      setLogs([]);
-    } finally {
+      console.error(error);
       setLoading(false);
     }
   }
 
   if (loading) {
     return (
-      <div style={loadingPageStyle}>
-        טוען חשבוניות...
+      <div style={loadingStyle}>
+        טוען נתונים...
       </div>
     );
   }
@@ -53,94 +55,71 @@ export default function InvoicesPage() {
     <div dir="rtl" style={pageStyle}>
       <TopNav />
 
-      <div style={wrapperStyle}>
-        <div style={heroCardStyle}>
+      <div style={containerStyle}>
+        <div style={headerCard}>
           <h1 style={titleStyle}>כל החשבוניות</h1>
-          <p style={subtitleStyle}>רשימה מלאה של הלוגים ממערכת האוטומציה</p>
+          <p style={subtitleStyle}>
+            רשימה מלאה של הלוגים ממערכת האוטומציה
+          </p>
         </div>
 
-        <div style={tableCardStyle}>
-          {logs.length === 0 ? (
-            <div style={emptyStateStyle}>לא נמצאו חשבוניות להצגה</div>
-          ) : (
-            <div style={tableWrapperStyle}>
-              <table style={tableStyle}>
-                <thead>
-                  <tr>
-                    <th style={thStyle}>חברה</th>
-                    <th style={thStyle}>חשבונית</th>
-                    <th style={thStyle}>סטטוס</th>
-                    <th style={thStyle}>תאריך חשבונית</th>
-                    <th style={thStyle}>תאריך העלאה למערכת</th>
-                    <th style={thStyle}>מסמך</th>
-                  </tr>
-                </thead>
+        <div style={tableCard}>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th>חברה</th>
+                <th>חשבונית</th>
+                <th>סטטוס</th>
+                <th>תאריך חשבונית</th>
+                <th>תאריך העלאה למערכת</th>
+                <th>מסמך</th>
+              </tr>
+            </thead>
 
-                <tbody>
-                  {logs.map((log, index) => (
-                    <tr key={index} style={rowStyle}>
-                      <td style={tdStyle}>{log.company || "לא ידוע"}</td>
+            <tbody>
+              {logs.map((log, index) => (
+                <tr key={index}>
+                  <td>{log.company}</td>
 
-                      <td style={tdStyle}>{log.invoiceNumber || "-"}</td>
+                  <td>{log.invoiceNumber}</td>
 
-                      <td style={tdStyle}>
-                        <span
-                          style={{
-                            ...statusBadgeStyle,
-                            ...(log.status === "Error"
-                              ? errorBadgeStyle
-                              : log.status === "Skipped"
-                              ? skippedBadgeStyle
-                              : uploadedBadgeStyle)
-                          }}
+                  <td>
+                    <span style={statusStyle}>
+                      {log.status}
+                    </span>
+                  </td>
+
+                  <td>{log.invoiceDate || "-"}</td>
+
+                  <td>{log.uploadDate}</td>
+
+                  <td>
+                    {log.fileLink ? (
+                      <div style={actionsStyle}>
+                        <a
+                          href={log.fileLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={openButton}
                         >
-                          {log.status || "Uploaded"}
-                        </span>
-                      </td>
+                          🧾 פתח חשבונית
+                        </a>
 
-                      <td style={tdStyle}>
-                        <span style={dateTextStyle}>
-                          {log.invoiceDate || "-"}
-                        </span>
-                      </td>
-
-                      <td style={tdStyle}>
-                        <span style={dateTextStyle}>
-                          {log.uploadDate || "-"}
-                        </span>
-                      </td>
-
-                      <td style={tdStyle}>
-                        {log.fileLink ? (
-                          <div style={actionsStyle}>
-                            <a
-                              href={log.fileLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={openButtonStyle}
-                            >
-                              🧾 פתח חשבונית
-                            </a>
-
-                            <a
-                              href={`${log.fileLink}?download=1`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={downloadButtonStyle}
-                            >
-                              ⬇ הורד
-                            </a>
-                          </div>
-                        ) : (
-                          <span style={dashStyle}>-</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                        <a
+                          href={buildDownloadLink(log.fileLink)}
+                          style={downloadButton}
+                        >
+                          ⬇ הורד
+                        </a>
+                      </div>
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -150,131 +129,68 @@ export default function InvoicesPage() {
 const pageStyle = {
   background: "#f4f6fb",
   minHeight: "100vh",
-  fontFamily: "Arial, sans-serif",
-  color: "#0f172a"
+  fontFamily: "Arial"
 };
 
-const loadingPageStyle = {
+const loadingStyle = {
   minHeight: "100vh",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: "#f4f6fb",
-  fontFamily: "Arial, sans-serif",
-  color: "#0f172a",
   fontSize: "18px"
 };
 
-const wrapperStyle = {
-  maxWidth: "1450px",
+const containerStyle = {
+  maxWidth: "1300px",
   margin: "0 auto",
   padding: "30px 20px"
 };
 
-const heroCardStyle = {
-  background: "#ffffff",
+const headerCard = {
+  background: "white",
+  padding: "30px",
   borderRadius: "16px",
-  padding: "28px 32px",
-  boxShadow: "0 10px 40px rgba(0,0,0,0.06)",
-  marginBottom: "24px"
+  marginBottom: "25px",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.05)"
 };
 
 const titleStyle = {
   margin: 0,
-  fontSize: "38px",
-  fontWeight: "700",
-  color: "#0f172a"
+  fontSize: "36px"
 };
 
 const subtitleStyle = {
-  marginTop: "10px",
-  marginBottom: 0,
   color: "#64748b",
-  fontSize: "16px"
+  marginTop: "8px"
 };
 
-const tableCardStyle = {
-  background: "#ffffff",
-  borderRadius: "16px",
+const tableCard = {
+  background: "white",
   padding: "20px",
+  borderRadius: "16px",
   boxShadow: "0 10px 30px rgba(0,0,0,0.05)"
-};
-
-const tableWrapperStyle = {
-  width: "100%",
-  overflowX: "auto"
 };
 
 const tableStyle = {
   width: "100%",
-  minWidth: "1150px",
-  borderCollapse: "collapse",
-  tableLayout: "auto"
+  borderCollapse: "collapse"
 };
 
-const thStyle = {
-  textAlign: "right",
-  padding: "16px 12px",
-  fontSize: "15px",
-  fontWeight: "700",
-  color: "#475569",
-  borderBottom: "2px solid #e5e7eb",
-  whiteSpace: "nowrap"
-};
-
-const tdStyle = {
-  textAlign: "right",
-  padding: "18px 12px",
-  fontSize: "15px",
-  color: "#0f172a",
-  borderBottom: "1px solid #f1f5f9",
-  verticalAlign: "middle"
-};
-
-const rowStyle = {
-  background: "#ffffff"
-};
-
-const dateTextStyle = {
-  direction: "ltr",
-  unicodeBidi: "isolate",
-  display: "inline-block",
-  whiteSpace: "nowrap"
-};
-
-const statusBadgeStyle = {
-  display: "inline-block",
-  padding: "7px 12px",
+const statusStyle = {
+  background: "#dcfce7",
+  color: "#166534",
+  padding: "6px 12px",
   borderRadius: "10px",
   fontSize: "13px",
-  fontWeight: "700",
-  whiteSpace: "nowrap"
-};
-
-const uploadedBadgeStyle = {
-  background: "#dcfce7",
-  color: "#166534"
-};
-
-const skippedBadgeStyle = {
-  background: "#fef3c7",
-  color: "#92400e"
-};
-
-const errorBadgeStyle = {
-  background: "#fee2e2",
-  color: "#991b1b"
+  fontWeight: "bold"
 };
 
 const actionsStyle = {
   display: "flex",
-  flexWrap: "wrap",
-  gap: "8px",
-  alignItems: "center"
+  gap: "10px"
 };
 
-const openButtonStyle = {
-  display: "inline-block",
+const openButton = {
   textDecoration: "none",
   background: "#eff6ff",
   color: "#1d4ed8",
@@ -282,12 +198,10 @@ const openButtonStyle = {
   padding: "8px 12px",
   borderRadius: "10px",
   fontSize: "13px",
-  fontWeight: "700",
-  whiteSpace: "nowrap"
+  fontWeight: "bold"
 };
 
-const downloadButtonStyle = {
-  display: "inline-block",
+const downloadButton = {
   textDecoration: "none",
   background: "#ecfdf5",
   color: "#166534",
@@ -295,18 +209,5 @@ const downloadButtonStyle = {
   padding: "8px 12px",
   borderRadius: "10px",
   fontSize: "13px",
-  fontWeight: "700",
-  whiteSpace: "nowrap"
-};
-
-const dashStyle = {
-  color: "#94a3b8",
-  fontWeight: "600"
-};
-
-const emptyStateStyle = {
-  padding: "30px",
-  textAlign: "center",
-  color: "#64748b",
-  fontSize: "16px"
+  fontWeight: "bold"
 };
