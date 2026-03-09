@@ -70,7 +70,7 @@ export default function InvoicesPage() {
     >
       <TopNav />
 
-      <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "30px 20px" }}>
+      <div style={{ maxWidth: "1450px", margin: "0 auto", padding: "30px 20px" }}>
         <div
           style={{
             background: "white",
@@ -129,6 +129,7 @@ export default function InvoicesPage() {
                   <th style={th}>סטטוס</th>
                   <th style={th}>תאריך חשבונית</th>
                   <th style={th}>תאריך העלאה למערכת</th>
+                  <th style={th}>מסמך</th>
                 </tr>
               </thead>
 
@@ -175,6 +176,21 @@ export default function InvoicesPage() {
                         {log.uploadDate || "-"}
                       </span>
                     </td>
+
+                    <td style={td}>
+                      {log.fileLink ? (
+                        <a
+                          href={log.fileLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={invoiceButtonStyle}
+                        >
+                          🧾 פתח חשבונית
+                        </a>
+                      ) : (
+                        <span style={{ color: "#94a3b8" }}>-</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -204,4 +220,16 @@ const dateTextStyle = {
   direction: "ltr",
   unicodeBidi: "isolate",
   display: "inline-block"
+};
+
+const invoiceButtonStyle = {
+  display: "inline-block",
+  textDecoration: "none",
+  background: "#eff6ff",
+  color: "#1d4ed8",
+  border: "1px solid #bfdbfe",
+  padding: "8px 12px",
+  borderRadius: "10px",
+  fontSize: "13px",
+  fontWeight: "bold"
 };
